@@ -1,0 +1,19 @@
+fallback/const-xs.inc
+fallback/const-c.inc
+README
+Makefile.PL
+StreamSerializer.xs
+t/01-data-ss.t
+t/02-empty-objects.t
+t/03_big_object.t
+t/04_recursive.t
+t/05_memory_leak.t
+MANIFEST
+ppport.h
+Changes
+lib/Data/StreamSerializer.pm
+benchmark/tests/01_100x10
+benchmark/tests/02_1000x10
+benchmark/generate_test_array.pl
+benchmark/vs_dumper.pl
+META.yml                                 Module meta-data (added by MakeMaker)
