@@ -1,7 +1,7 @@
 --- #YAML:1.0
 name:               Data-StreamSerializer
-version:            0.01
-abstract:           Perl extension for blah blah blah
+version:            0.02
+abstract:           non-blocking serializer.
 author:
     - Dmitry E. Oboukhov <unera@debian.org>
 license:            unknown

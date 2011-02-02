@@ -28,7 +28,7 @@ our @EXPORT = qw(
 
 );
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 sub AUTOLOAD {
     # This AUTOLOAD is used to 'autoload' constants from the constant()
@@ -133,7 +133,7 @@ __END__
 
 =head1 NAME
 
-Data::StreamSerializer - Perl extension for blah blah blah
+Data::StreamSerializer - non-blocking serializer.
 
 =head1 SYNOPSIS
 
