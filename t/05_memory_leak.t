@@ -65,11 +65,12 @@ for(;;) {
 ok $size_end == $size, "Check memory leak";
 note "$i iterations were done, $len bytes were produced";
 
-my $str = '';
+my @test_array;
 $time = time;
-$size = Data::StreamSerializer::_memory_size;
-while(time - $time < 1) {
-    $str .= 'x' x 20;
+$size = $size_end;
+for (1 .. 1000_000 + int rand 1000_000) {
+    push @test_array, rand rand 1000;
 }
 
-ok Data::StreamSerializer::_memory_size != $size, "Check memory checker :)";
+ok Data::StreamSerializer::_memory_size != $size,
+    sprintf "Check memory checker (size: %d elements) :)", scalar @test_array;
