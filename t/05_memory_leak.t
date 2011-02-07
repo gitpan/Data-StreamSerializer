@@ -33,10 +33,12 @@ sub gen_rand_object() {
     $h;
 }
 
+my $size_start = Data::StreamSerializer::_memory_size;
+
 my $size = Data::StreamSerializer::_memory_size;
 my $size_end = Data::StreamSerializer::_memory_size;
 my $time = time;
-my ($count, $count_end) = (1, 1);
+my $count = 0;
 my $i = 0;
 my $len = 0;
 for(;;) {
@@ -46,31 +48,19 @@ for(;;) {
         $i++;
     }
 
-    if (time - $time > $count and $count < 3) {
+    if ($count++ < 20) {
         $size = Data::StreamSerializer::_memory_size;
-        $count++;
-    }
-
-    if ($count_end < 10) {
-        if (time - $time > $count_end) {
-            $size_end = Data::StreamSerializer::_memory_size;
-            $count_end++;
-        }
-    } else {
+    } elsif($count++ < 100) {
         $size_end = Data::StreamSerializer::_memory_size;
+        last unless $size_end == $size;
+    } else {
         last;
     }
 }
 
-ok $size_end == $size, "Check memory leak";
+my $leak = $size_end - $size;
+ok $size_end == $size, "Check memory leak ($leak bytes)";
 note "$i iterations were done, $len bytes were produced";
 
-my @test_array;
-$time = time;
-$size = $size_end;
-for (1 .. 1000_000 + int rand 1000_000) {
-    push @test_array, rand rand 1000;
-}
 
-ok Data::StreamSerializer::_memory_size != $size,
-    sprintf "Check memory checker (size: %d elements) :)", scalar @test_array;
+ok Data::StreamSerializer::_memory_size != $size_start, "Check memory checker";
