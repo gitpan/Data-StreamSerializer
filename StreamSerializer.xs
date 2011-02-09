@@ -4,8 +4,6 @@
 
 #include "ppport.h"
 
-#include "const-c.inc"
-
 enum { NO_ERROR = 0, RECURSION_DEPTH_ERROR = -1000 };
 
 
@@ -21,6 +19,8 @@ static SV * dump(SV * dumper, SV * variable) {
 			sv_catsv(result, variable);
 			sv_catpvn(result, "\"", 1);
 			return result;
+		default:
+			break;
 	}
 
 	dSP;
@@ -78,7 +78,7 @@ static int push_parent(AV *parents, SV * obj, HV * refcounters) {
     	result = SvIV(value) + 1;
     	sv_setiv(value, result);
     } else {
-    	hv_store(refcounters, name, name_len, newSViv(1), 0);
+    	(void) hv_store(refcounters, name, name_len, newSViv(1), 0);
     	result = 1;
     }
 
@@ -97,7 +97,7 @@ static SV * pop_parent(AV *parents, HV * refcounters) {
     	SV * value = (SV *)*hv_fetch(refcounters, name, name_len, 0);
     	counter = SvIV(value) - 1;
     	if (counter > 0)
-    	    hv_delete(refcounters, name, name_len, 0);
+    	    (void) hv_delete(refcounters, name, name_len, 0);
     	else
     	    sv_setiv(value, counter);
     }
@@ -106,7 +106,6 @@ static SV * pop_parent(AV *parents, HV * refcounters) {
 
 MODULE = Data::StreamSerializer		PACKAGE = Data::StreamSerializer
 
-INCLUDE: const-xs.inc
 PROTOTYPES: ENABLE
 
 unsigned long _memory_size()
@@ -165,6 +164,9 @@ int _next(data, block_size, stack, eof, dumper, str, rdepth)
 					obj = SvRV(*av_fetch(hi, key, 0));
 					continue;
                                 }
+
+                                default:
+                                	break;
 			}
 		}
 		
@@ -381,6 +383,9 @@ int _next(data, block_size, stack, eof, dumper, str, rdepth)
 				obj = SvRV(*av_fetch(hi, key, 0));
 
 				goto CHECK_LENGTH;
+
+			default:
+				break;
 		}
 
 		croak("Internal error: broken object stack");

@@ -24,7 +24,7 @@ our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
 
 our @EXPORT = qw();
 
-our $VERSION = '0.04';
+our $VERSION = '0.05';
 
 sub AUTOLOAD {
     # This AUTOLOAD is used to 'autoload' constants from the constant()
@@ -108,6 +108,12 @@ sub next
     return $str;
 }
 
+
+sub is_eof
+{
+    my ($self) = @_;
+    return $self->{eof};
+}
 
 sub recursion_detected
 {
@@ -206,7 +212,12 @@ etc.
 
 =head2 recursion_detected
 
-Returns TRUE if a recursion was detected.
+Returns B<TRUE> if a recursion was detected.
+
+=head2 is_eof
+
+Returns B<TRUE> if eof is reached. If it is B<TRUE> the following L<next> will
+return B<undef>.
 
 =head1 SEE ALSO
 

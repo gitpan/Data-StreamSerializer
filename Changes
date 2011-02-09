@@ -4,3 +4,6 @@ Revision history for Perl extension Data::StreamSerializer.
 	- original version; created by h2xs 1.23 with options
 		-n Data::StreamSerializer
 
+0.05  Wed Feb  9 09:12:37 MSK 2011
+        - added 'is_eof' function
+        - reorder tests
