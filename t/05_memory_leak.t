@@ -53,18 +53,18 @@ for(;;) {
         $size = Data::StreamSerializer::_memory_size;
     } elsif($count++ < 100) {
         $size_end = Data::StreamSerializer::_memory_size;
-        last unless $size_end == $size;
+        last unless $size_end <= $size;
     } else {
         last;
     }
 }
 
 my $leak = $size_end - $size;
-ok $size_end == $size, "Check memory leak ($leak bytes)";
+ok $size_end <= $size, "Check memory leak ($leak bytes)";
 note "$i iterations were done, $len bytes were produced";
 
 
-if (Data::StreamSerializer::_memory_size != $size_start) {
+if (Data::StreamSerializer::_memory_size > $size_start) {
     ok 1, "Check memory checker";
 } elsif (hostname =~ /^(apache|marish|nbw)$/) {
     fail "Check memory checker";

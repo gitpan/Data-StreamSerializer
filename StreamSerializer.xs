@@ -141,7 +141,7 @@ int _next(data, block_size, stack, eof, dumper, str, rdepth)
 	for (i = 0; i <= av_len(stack); i++) {
 		key = SvIV(*av_fetch(stack, i, 0));
                 
-                while(SvROK(obj) && SvTYPE(SvRV(obj)) == SVt_RV)
+                while(SvROK(obj) && SvROK(SvRV(obj)))
                     obj = SvRV(obj);
 		// array
 		if (SvROK(obj)) {
@@ -195,6 +195,37 @@ int _next(data, block_size, stack, eof, dumper, str, rdepth)
 			SvREFCNT_dec(d);
 			goto NEXT_OBJECT;
 		}
+			
+
+		// REF
+		if (SvROK(SvRV(obj))) {
+			int depth = 0;
+			for (i = 0; SvROK(SvRV(obj)) ; i++) {
+			    depth =
+			    	push_parent(parents, newRV(obj), refcounters);
+			    if (depth > 1) {
+				i++;
+				status = RECURSION_DEPTH_ERROR;
+				break;
+			    }
+			    obj = SvRV(obj);
+			}
+
+			for (; i > 0; i--) {
+			    SvREFCNT_dec(pop_parent(parents, refcounters));
+			    if (depth <= 1) {
+				sv_catpvn(str, "\\", 1);
+			    }
+			}
+
+			if (depth > 1) {
+			    sv_catpvn(str, "undef", 5);
+			    goto NEXT_OBJECT;
+			}
+			    
+			goto CHECK_TYPES;
+		}
+			
 
 		switch(SvTYPE(SvRV(obj))) {
 			case SVt_PV:
@@ -231,37 +262,6 @@ int _next(data, block_size, stack, eof, dumper, str, rdepth)
 			}
 			
 
-			// REF
-			case SVt_RV: {
-			        int depth = 0;
-			        for (i = 0; SVt_RV == SvTYPE(SvRV(obj)) ; i++) {
-			            depth = push_parent(
-			                parents, newRV(obj), refcounters);
-			            if (depth > 1) {
-			            	i++;
-			            	status = RECURSION_DEPTH_ERROR;
-			            	break;
-                                    }
-			            obj = SvRV(obj);
-                                }
-
-                                for (; i > 0; i--) {
-                                    SvREFCNT_dec(
-                                        pop_parent(parents, refcounters)
-                                    );
-                                    if (depth <= 1) {
-                                    	sv_catpvn(str, "\\", 1);
-                                    }
-                                }
-
-                                if (depth > 1) {
-                                    sv_catpvn(str, "undef", 5);
-                                    goto NEXT_OBJECT;
-                                }
-                                    
-				goto CHECK_TYPES;
-                        }
-			
 			
 			// ARRAY
 			case SVt_PVAV: {

@@ -18,11 +18,13 @@ my $subt = {
     subc => [ qw{ subd sube subf } ],
 };
 my @h = (
-    \\\[ a => 'b', 'f', \'g', \$subt ],
+    0,
+    \\\[ a => 'b', 'f', \\\'g', \$subt ],
     \\[ c => 'd' ],
     [ e => [ qw( 1 2 3) ] ],
     \\\\{ "привет" => "utf8: строка",
-      some => $subt
+      some => $subt,
+      undef => undef,
     }
 );
 $| = 1;
@@ -48,6 +50,7 @@ ok compare_object($ds, \@h), "Original object wasn't modified";
 sub compare_object($$)
 {
     my ($o1, $o2) = @_;
+    return 1 if (!defined($o1) and !defined($o2));
     return 0 unless ref($o1) eq ref $o2;
     return $o1 eq $o2 unless ref $o1;                        # SCALAR
     return $o1 eq $o2 if 'Regexp' eq ref $o1;                # Regexp
